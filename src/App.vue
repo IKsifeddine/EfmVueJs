@@ -76,9 +76,11 @@ const handleSave = async (contact) => {
     if (contact.id) {
       // Update
       await axios.put(`${API_URL}/${contact.id}`, contact)
+      alert('Contact mis à jour avec succès!')
     } else {
       // Create
       await axios.post(API_URL, contact)
+      alert('Contact ajouté avec succès!')
     }
     await fetchContacts()
     showForm.value = false
@@ -100,7 +102,7 @@ const handleEdit = (contact) => {
 // Delete contact
 const handleDelete = async (id) => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer ce contact ?')) return
-
+  
   loading.value = true
   try {
     await axios.delete(`${API_URL}/${id}`)
@@ -112,6 +114,11 @@ const handleDelete = async (id) => {
     loading.value = false
   }
 }
+
+// Fetch contacts on component mount
+onMounted(() => {
+  fetchContacts()
+})
 
 // Initial load
 onMounted(fetchContacts)

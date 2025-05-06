@@ -25,8 +25,11 @@
           required
           placeholder="john@example.com"
           class="w-full p-3 rounded-lg bg-gray-50 focus:bg-white"
+          :class="{ 'border-red-500': emailError }"
+          @input="validateEmail"
           :disabled="loading"
         />
+        <p v-if="emailError" class="mt-1 text-sm text-red-600">{{ emailError }}</p>
       </div>
 
       <div>
@@ -44,7 +47,7 @@
       <div class="flex gap-3 pt-2">
         <button 
           type="submit" 
-          class="flex-1 bg-primary hover:bg-secondary text-black px-6 py-3 rounded-lg font-medium"
+          class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           :disabled="loading"
         >
           <span v-if="loading">Enregistrement...</span>
@@ -79,6 +82,18 @@ const form = ref({
   phone: ''
 })
 
+const emailError = ref('')
+const successMessage = ref('')
+
+const validateEmail = () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(form.value.email)) {
+    emailError.value = 'Veuillez entrer une adresse email valide'
+  } else {
+    emailError.value = ''
+  }
+}
+
 watch(() => props.contact, (newContact) => {
   if (newContact) {
     form.value = { ...newContact }
@@ -92,6 +107,11 @@ watch(() => props.contact, (newContact) => {
 }, { immediate: true })
 
 const handleSubmit = () => {
+  if (emailError.value) {
+    return
+  }
+  
+  successMessage.value = ''
   emit('save', {
     ...form.value,
     id: props.contact?.id
